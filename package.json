@@ -15,5 +15,10 @@
   "bugs": {
     "url": "https://github.com/the11060/fyp1/issues"
   },
-  "homepage": "https://github.com/the11060/fyp1#readme"
+  "homepage": "https://github.com/the11060/fyp1#readme",
+  "dependencies": {
+    "express": "^4.14.1",
+    "morgan": "^1.8.1"
+  },
+  "devDependencies": {}
 }
