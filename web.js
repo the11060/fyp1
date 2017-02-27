@@ -24,7 +24,8 @@ var io = require('socket.io')(http);
 
 app.get('/', function(request, response) {
   // response.send('Hello, Python!');
-  response.sendfile('index.html');
+  // response.sendfile('index.html');
+  response.sendfile('testing1.html');
 });
 
 app.use(express.static(path.join(__dirname, '/')));
