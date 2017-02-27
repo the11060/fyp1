@@ -1,0 +1,240 @@
+<!doctype html>
+<html>
+<head>
+  <title>Socket.IO chat</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    .col-1 {width: 8.33%;}
+    .col-2 {width: 16.66%;}
+    .col-3 {width: 25%;}
+    .col-4 {width: 33.33%;}
+    .col-5 {width: 41.66%;}
+    .col-6 {width: 50%;}
+    .col-7 {width: 58.33%;}
+    .col-8 {width: 66.66%;}
+    .col-9 {width: 75%;}
+    .col-10 {width: 83.33%;}
+    .col-11 {width: 91.66%;}
+    .col-12 {width: 100%;}
+
+    body {
+      font: 13px Helvetica, Arial;
+    }
+
+    h1{
+      text-align: center;
+      padding: 10px 0px;
+    }
+
+    /* message content screen */
+    #wrapper_message_content_box{
+      position: relative;
+      height: 500px;
+      overflow-y: scroll;
+      margin-left: auto;
+      margin-right: auto;
+      border: 1px solid rgb(240,240,240);
+    }
+
+    /* message content input*/
+    #wrapper_message_sender_input{
+      position: relative;
+      height: 50px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    form {
+      /* background: #000; */
+      background: rgb(240, 240, 240);
+      padding: 3px;
+      /* position: fixed; */
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+    }
+    form input {
+      border: 0;
+      padding: 10px;
+      font-size: 20px;
+      width: 90%;
+      margin-right: .5%;
+    }
+    form button {
+      width: 9%;
+      /* background: rgb(130, 224, 255); */
+      background: rgb(240, 240, 240);
+      border: none;
+      padding: 10px;
+    }
+    #messages {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+    }
+    #messages li {
+      padding: 10px 10px;
+    }
+    #messages li:nth-child(odd) {
+      background: #FAFCFC;
+    }
+
+    .wrapper {
+      display: flex;
+      flex-flow: row wrap;
+      background: #E6F5F5;
+    }
+
+    .msg_useranme{
+      flex: 1 8%;
+      text-align: center;
+    }
+    .msg_useranme img{
+      width: 50px;
+      height: 50px;
+    }
+
+    .msg_content{
+      flex: 2 79%;
+      padding-left: 10px;
+    }
+    .msg_datetime{
+      text-align: right;
+      flex: 1 100%;
+    }
+
+    @media only screen and (max-width: 768px) {
+      /* For mobile phones: */
+      [class*="col-"] {
+        width: 100%;
+      }
+
+      #wrapper_message_content_box{
+        position: fixed;
+        height: 84%;
+        overflow-y: scroll;
+        margin-bottom: 150px;
+        /* border: 5px solid green; */
+      }
+
+      #wrapper_message_sender_input{
+        position: fixed;
+        height: 50px;
+        bottom: 0px;
+      }
+
+    }
+
+  </style>
+</head>
+<body>
+  <h1>Group Chat</h1>
+  <div id="wrapper_message_content_box" class="col-10" >
+
+    <ul id="messages">
+      <p id="content" ></p>
+    </ul>
+  </div>
+
+  <div id="wrapper_message_sender_input" class="col-10" >
+    <form action="">
+      <input type="hidden" id="id" value="0" >
+      <input id="m"  autofocus="true" autocomplete="off" /><button>Send</button>
+    </form>
+  </div>
+
+
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+  <script>
+
+  var id = getParameterByName('id');
+  $('#id').val(id);
+
+
+    function get_message(msg,id){
+      var temp = "";
+      temp += "<li class='wrapper'>";
+
+
+      
+      temp += "<p class='msg_useranme'>"+"<img src='./images/s"+id+".jpg'>"+"</p>";
+      temp += "<p class='msg_content'>"+msg+"</p>";
+      temp += "<p class='msg_datetime'>"+formatDate(new Date())+"</p>"; 
+      temp += "</li>";
+      return temp;
+    }
+
+    function setScrollTop(){
+      var objDiv = document.getElementById("wrapper_message_content_box");
+      objDiv.scrollTop = objDiv.scrollHeight;
+    }
+
+    function formatDate(date) {
+      var hours = date.getHours();
+      var minutes = date.getMinutes();
+      var ampm = hours >= 12 ? 'pm' : 'am';
+      hours = hours % 12;
+      hours = hours ? hours : 12; // the hour '0' should be '12'
+      minutes = minutes < 10 ? '0'+minutes : minutes;
+      var strTime = hours + ':' + minutes + ' ' + ampm;
+      return  date.getDate() + "/" + (date.getMonth()+1) +"/"+ date.getFullYear() + "  " + strTime;
+    }
+
+    function getParameterByName(name, url) {
+      if (!url) {
+        url = window.location.href;
+      }
+      name = name.replace(/[\[\]]/g, "\\$&");
+      var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+      results = regex.exec(url);
+      if (!results) return null;
+      if (!results[2]) return '';
+      return decodeURIComponent(results[2].replace(/\+/g, " "));
+    }
+
+
+    var socket = io();
+
+    // handle message   
+    $('form').submit(function(){
+      socket.emit('chat message', $('#m').val(), $('#id').val());
+      $('#m').val('');
+      return false;
+    });
+
+    socket.on('chat message', function(msg, id){
+      // $('#content').after($('<li>').text(msg));
+      // var id = getParameterByName('id');
+      console.log("images: "+id);
+      var temp = get_message(msg,id);
+      $('#content').append(temp);
+      setScrollTop();
+    });
+
+
+    // handle user name
+    // socket.on('connect', function(){
+    //   console.log("We are connected!");
+
+    //   var name = prompt("What is your name?");
+
+    //   this.emit("set nickname", name, function(success){
+    //     console.log("The server got the message!");
+    //     if(!success){
+    //       console.log("Nickname in use!");
+    //     }
+    //   });
+
+    // });
+
+  </script>
+
+</body>
+</html>
