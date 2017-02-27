@@ -17,12 +17,10 @@ app.listen(port, function() {
 
 var express = require('express');
 var logger = require('morgan');
-//var app = require('express')();
-// var http = require('http').Server(app);
-// var path = require('path');
-// var io = require('socket.io')(http);
-
-var app = express();
+var app = require('express')();
+var http = require('http').Server(app);
+var path = require('path');
+var io = require('socket.io')(http);
 
 app.get('/', function(request, response) {
   response.send('Hello, Python!');
