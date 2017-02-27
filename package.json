@@ -1,3 +1,4 @@
+
 {
   "name": "fyp1",
   "version": "1.0.0",
@@ -18,7 +19,8 @@
   "homepage": "https://github.com/the11060/fyp1#readme",
   "dependencies": {
     "express": "^4.14.1",
-    "morgan": "^1.8.1"
+    "morgan": "^1.8.1",
+    "socket.io": "^1.2.0"
   },
   "devDependencies": {}
 }
