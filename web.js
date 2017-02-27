@@ -23,7 +23,8 @@ var path = require('path');
 var io = require('socket.io')(http);
 
 app.get('/', function(request, response) {
-  response.send('Hello, Python!');
+  // response.send('Hello, Python!');
+  response.sendfile('index.html');
 });
 
 var port = process.env.PORT || 3000;
