@@ -24,7 +24,7 @@ var io = require('socket.io')(http);
 
 app.get('/', function(request, response) {
   // response.send('Hello, Python!');
-  response.sendfile('index.html');
+  response.sendfile('login.html');
   
 });
 
